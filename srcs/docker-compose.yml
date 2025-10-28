@@ -1,0 +1,161 @@
+# ============================================================================ #
+#                         Docker Compose 設定ファイル                           #
+# ============================================================================ #
+# Inception プロジェクト用の Docker Compose 設定
+# NGINX、WordPress、MariaDB の 3 つのサービスを定義
+# ============================================================================ #
+
+version: '3.8'
+
+# ============================================================================ #
+#                               サービス定義                                     #
+# ============================================================================ #
+
+services:
+
+  # -------------------------------------------------------------------------- #
+  #                             NGINX サービス                                 #
+  # -------------------------------------------------------------------------- #
+  # HTTPS (TLS) リクエストを処理し、WordPress へリバースプロキシする
+  # ポート 443 のみを公開（TLSv1.2/1.3）
+  
+  nginx:
+    # イメージ名：サービス名と同じにする（要件）
+    image: nginx
+    
+    # コンテナ名
+    container_name: nginx
+    
+    # Dockerfile の場所
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    
+    # 依存関係：WordPress が起動してから NGINX を起動
+    depends_on:
+      - wordpress
+    
+    # ポートマッピング：ホストの 443 → コンテナの 443
+    ports:
+      - "443:443"
+    
+    # ネットワーク：inception-network に接続
+    networks:
+      - inception-network
+    
+    # ボリュームマウント：WordPress ファイルを読み取り専用でマウント
+    volumes:
+      - wordpress-data:/var/www/html:ro
+    
+    # 環境変数：.env ファイルから読み込み
+    env_file:
+      - .env
+    
+    # 再起動ポリシー：クラッシュ時に自動再起動（要件）
+    restart: always
+
+  # -------------------------------------------------------------------------- #
+  #                           WordPress サービス                               #
+  # -------------------------------------------------------------------------- #
+  # PHP-FPM で WordPress を実行
+  # NGINX からのリクエストを処理
+  
+  wordpress:
+    # イメージ名：サービス名と同じにする（要件）
+    image: wordpress
+    
+    # コンテナ名
+    container_name: wordpress
+    
+    # Dockerfile の場所
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    
+    # 依存関係：MariaDB が起動してから WordPress を起動
+    depends_on:
+      - mariadb
+    
+    # ネットワーク：inception-network に接続
+    networks:
+      - inception-network
+    
+    # ボリュームマウント：WordPress ファイルを保存
+    volumes:
+      - wordpress-data:/var/www/html
+    
+    # 環境変数：.env ファイルから読み込み
+    env_file:
+      - .env
+    
+    # 再起動ポリシー：クラッシュ時に自動再起動（要件）
+    restart: always
+
+  # -------------------------------------------------------------------------- #
+  #                           MariaDB サービス                                 #
+  # -------------------------------------------------------------------------- #
+  # MySQL 互換のデータベースサーバー
+  # WordPress のデータを保存
+  
+  mariadb:
+    # イメージ名：サービス名と同じにする（要件）
+    image: mariadb
+    
+    # コンテナ名
+    container_name: mariadb
+    
+    # Dockerfile の場所
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    
+    # ネットワーク：inception-network に接続
+    networks:
+      - inception-network
+    
+    # ボリュームマウント：データベースファイルを保存
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    
+    # 環境変数：.env ファイルから読み込み
+    env_file:
+      - .env
+    
+    # 再起動ポリシー：クラッシュ時に自動再起動（要件）
+    restart: always
+
+# ============================================================================ #
+#                             ネットワーク定義                                   #
+# ============================================================================ #
+# すべてのコンテナが通信するための仮想ネットワーク
+
+networks:
+  # カスタムネットワーク名
+  inception-network:
+    # ブリッジドライバーを使用（デフォルト）
+    driver: bridge
+
+# ============================================================================ #
+#                             ボリューム定義                                     #
+# ============================================================================ #
+# データを永続化するためのボリューム
+
+volumes:
+  # WordPress ファイル用ボリューム
+  wordpress-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      # ホストマシンのパス（要件：/home/login/data）
+      device: /home/hana/data/wordpress
+  
+  # MariaDB データベース用ボリューム
+  mariadb-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      # ホストマシンのパス（要件：/home/login/data）
+      device: /home/hana/data/mariadb
+
