@@ -20,7 +20,7 @@ services:
   # ポート 443 のみを公開（TLSv1.2/1.3）
   
   nginx:
-    # イメージ名：サービス名と同じにする（要件）
+    # イメージ名
     image: nginx
     
     # コンテナ名
@@ -51,7 +51,7 @@ services:
     env_file:
       - .env
     
-    # 再起動ポリシー：クラッシュ時に自動再起動（要件）
+    # 再起動ポリシー：クラッシュ時に自動再起動
     restart: always
 
   # -------------------------------------------------------------------------- #
@@ -61,7 +61,7 @@ services:
   # NGINX からのリクエストを処理
   
   wordpress:
-    # イメージ名：サービス名と同じにする（要件）
+    # イメージ名
     image: wordpress
     
     # コンテナ名
@@ -88,7 +88,7 @@ services:
     env_file:
       - .env
     
-    # 再起動ポリシー：クラッシュ時に自動再起動（要件）
+    # 再起動ポリシー：クラッシュ時に自動再起動
     restart: always
 
   # -------------------------------------------------------------------------- #
@@ -98,7 +98,7 @@ services:
   # WordPress のデータを保存
   
   mariadb:
-    # イメージ名：サービス名と同じにする（要件）
+    # イメージ名
     image: mariadb
     
     # コンテナ名
@@ -121,8 +121,8 @@ services:
     env_file:
       - .env
     
-    # 再起動ポリシー：クラッシュ時に自動再起動（要件）
-    restart: on-failure:3
+    # 再起動ポリシー：クラッシュ時に自動再起動
+    restart: always
 
 # ============================================================================ #
 #                             ネットワーク定義                                   #
@@ -147,7 +147,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      # ホストマシンのパス（要件：/home/login/data）
+      # ホストマシンのパス
       device: /home/hana/data/wordpress
   
   # MariaDB データベース用ボリューム
@@ -156,6 +156,6 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      # ホストマシンのパス（要件：/home/login/data）
+      # ホストマシンのパス
       device: /home/hana/data/mariadb
 
