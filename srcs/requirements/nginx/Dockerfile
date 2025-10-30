@@ -9,34 +9,36 @@
 # ベースイメージ：Debian 11 (bullseye) - 安定版の一つ前のバージョン
 # ---------------------------------------------------------------------------- #
 
-FROM debian:bullseye
+FROM	debian:bullseye
 
 # ---------------------------------------------------------------------------- #
 # メタデータ
 # ---------------------------------------------------------------------------- #
 
-LABEL maintainer="hmori"
-LABEL description="NGINX with TLS for Inception project"
+LABEL	maintainer="hmori"
+LABEL	description="NGINX with TLS for Inception project"
 
 # ---------------------------------------------------------------------------- #
 # パッケージのインストール
 # ---------------------------------------------------------------------------- #
 
-RUN apt-get update && apt-get install -y \
-    # NGINX ウェブサーバー
-    nginx \
-    # OpenSSL：自己署名証明書の生成に使用
-    openssl \
-    # 不要なファイルを削除してイメージサイズを削減
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN		apt-get update && apt-get install -y \
+		# NGINX ウェブサーバー
+		nginx \
+		# OpenSSL：自己署名証明書の生成に使用
+		openssl \
+		# Tini：軽量 init システム（ゾンビプロセス対策・シグナル転送）
+		tini \
+		# 不要なファイルを削除してイメージサイズを削減
+		&& apt-get clean \
+		&& rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------------------------------------- #
 # SSL/TLS 証明書の生成
 # ---------------------------------------------------------------------------- #
 
 # SSL ディレクトリを作成
-RUN mkdir -p /etc/nginx/ssl
+RUN		mkdir -p /etc/nginx/ssl
 
 # 自己署名証明書を生成
 # -x509: X.509 証明書を生成
@@ -46,30 +48,33 @@ RUN mkdir -p /etc/nginx/ssl
 # -keyout: 秘密鍵の出力先
 # -out: 証明書の出力先
 # -subj: 証明書のサブジェクト情報
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout /etc/nginx/ssl/nginx.key \
-    -out /etc/nginx/ssl/nginx.crt \
-    -subj "/C=JP/ST=Tokyo/L=Tokyo/O=42Tokyo/OU=Student/CN=hmori.42.fr"
+RUN		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+		-keyout /etc/nginx/ssl/nginx.key \
+		-out /etc/nginx/ssl/nginx.crt \
+		-subj "/C=JP/ST=Tokyo/L=Tokyo/O=42Tokyo/OU=Student/CN=hmori.42.fr"
 
 # ---------------------------------------------------------------------------- #
 # 設定ファイルのコピー
 # ---------------------------------------------------------------------------- #
 
 # カスタム NGINX 設定ファイルをコピー
-COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY	conf/nginx.conf /etc/nginx/nginx.conf
 
 # ---------------------------------------------------------------------------- #
 # ポート公開
 # ---------------------------------------------------------------------------- #
 
 # HTTPS ポート 443 を公開
-EXPOSE 443
+EXPOSE	443
 
 # ---------------------------------------------------------------------------- #
 # コンテナ起動コマンド
 # ---------------------------------------------------------------------------- #
 
+# Tini を PID 1 として起動（プロセス管理・シグナル転送を担当）
+ENTRYPOINT	["/usr/bin/tini", "--"]
+
 # NGINX をフォアグラウンドで起動
 # daemon off: バックグラウンドではなくフォアグラウンドで実行（Docker 要件）
-CMD ["nginx", "-g", "daemon off;"]
+CMD			["nginx", "-g", "daemon off;"]
 

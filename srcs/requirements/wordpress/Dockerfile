@@ -9,47 +9,49 @@
 # ベースイメージ：Debian 11 (bullseye) - 安定版の一つ前のバージョン
 # ---------------------------------------------------------------------------- #
 
-FROM debian:bullseye
+FROM	debian:bullseye
 
 # ---------------------------------------------------------------------------- #
 # メタデータ
 # ---------------------------------------------------------------------------- #
 
-LABEL maintainer="hmori"
-LABEL description="WordPress with PHP-FPM for Inception project"
+LABEL	maintainer="hmori"
+LABEL	description="WordPress with PHP-FPM for Inception project"
 
 # ---------------------------------------------------------------------------- #
 # パッケージのインストール
 # ---------------------------------------------------------------------------- #
 
-RUN apt-get update && apt-get install -y \
-    # PHP-FPM：FastCGI Process Manager
-    php7.4-fpm \
-    # PHP MySQL 拡張（MariaDB との通信に必要）
-    php7.4-mysql \
-    # PHP MySQLi 拡張（WordPress が使用）
-    php7.4-mysqli \
-    # PHP cURL 拡張（HTTP リクエスト用）
-    php7.4-curl \
-    # PHP GD 拡張（画像処理用）
-    php7.4-gd \
-    # PHP mbstring 拡張（マルチバイト文字列処理用）
-    php7.4-mbstring \
-    # PHP XML 拡張（XML パース用）
-    php7.4-xml \
-    # PHP ZIP 拡張（プラグイン/テーマのインストール用）
-    php7.4-zip \
-    # PHP Imagick 拡張（高度な画像処理用）
-    php7.4-imagick \
-    # PHP Intl 拡張（国際化機能用）
-    php7.4-intl \
-    # curl：ファイルダウンロード用
-    curl \
-    # MariaDB クライアント（データベース接続確認用）
-    mariadb-client \
-    # 不要なファイルを削除してイメージサイズを削減
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN		apt-get update && apt-get install -y \
+		# PHP-FPM：FastCGI Process Manager
+		php7.4-fpm \
+		# PHP MySQL 拡張（MariaDB との通信に必要）
+		php7.4-mysql \
+		# PHP MySQLi 拡張（WordPress が使用）
+		php7.4-mysqli \
+		# PHP cURL 拡張（HTTP リクエスト用）
+		php7.4-curl \
+		# PHP GD 拡張（画像処理用）
+		php7.4-gd \
+		# PHP mbstring 拡張（マルチバイト文字列処理用）
+		php7.4-mbstring \
+		# PHP XML 拡張（XML パース用）
+		php7.4-xml \
+		# PHP ZIP 拡張（プラグイン/テーマのインストール用）
+		php7.4-zip \
+		# PHP Imagick 拡張（高度な画像処理用）
+		php7.4-imagick \
+		# PHP Intl 拡張（国際化機能用）
+		php7.4-intl \
+		# curl：ファイルダウンロード用
+		curl \
+		# MariaDB クライアント（データベース接続確認用）
+		mariadb-client \
+		# Tini：軽量 init システム（ゾンビプロセス対策・シグナル転送）
+		tini \
+		# 不要なファイルを削除してイメージサイズを削減
+		&& apt-get clean \
+		&& rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------------------------------------- #
 # WP-CLI のインストール
@@ -58,18 +60,18 @@ RUN apt-get update && apt-get install -y \
 # WordPress のインストールと設定を自動化するために使用
 
 # WP-CLI をダウンロード
-RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-    # 実行権限を付与
-    && chmod +x wp-cli.phar \
-    # システムパスに移動
-    && mv wp-cli.phar /usr/local/bin/wp
+RUN		curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+		# 実行権限を付与
+		&& chmod +x wp-cli.phar \
+		# システムパスに移動
+		&& mv wp-cli.phar /usr/local/bin/wp
 
 # ---------------------------------------------------------------------------- #
 # PHP-FPM 設定
 # ---------------------------------------------------------------------------- #
 
 # PHP-FPM の設定ファイルをコピー
-COPY conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
+COPY	conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
 # PHP の設定ファイルをコピー（オプション）
 # COPY conf/php.ini /etc/php/7.4/fpm/php.ini
@@ -79,38 +81,41 @@ COPY conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 # ---------------------------------------------------------------------------- #
 
 # WordPress のダウンロードと設定を行うスクリプトをコピー
-COPY tools/setup-wordpress.sh /usr/local/bin/setup-wordpress.sh
+COPY	tools/setup-wordpress.sh /usr/local/bin/setup-wordpress.sh
 
 # スクリプトに実行権限を付与
-RUN chmod +x /usr/local/bin/setup-wordpress.sh
+RUN		chmod +x /usr/local/bin/setup-wordpress.sh
 
 # ---------------------------------------------------------------------------- #
 # 作業ディレクトリの設定
 # ---------------------------------------------------------------------------- #
 
 # WordPress のインストールディレクトリ
-WORKDIR /var/www/html
+WORKDIR	/var/www/html
 
 # ---------------------------------------------------------------------------- #
 # PHP-FPM 用のディレクトリを作成
 # ---------------------------------------------------------------------------- #
 
 # PHP-FPM のソケット/PID ファイル用ディレクトリを作成
-RUN mkdir -p /run/php && \
-    # www-data ユーザーに所有権を付与
-    chown -R www-data:www-data /var/www/html /run/php
+RUN		mkdir -p /run/php && \
+		# www-data ユーザーに所有権を付与
+		chown -R www-data:www-data /var/www/html /run/php
 
 # ---------------------------------------------------------------------------- #
 # ポート公開
 # ---------------------------------------------------------------------------- #
 
 # PHP-FPM のデフォルトポート 9000 を公開
-EXPOSE 9000
+EXPOSE	9000
 
 # ---------------------------------------------------------------------------- #
 # コンテナ起動コマンド
 # ---------------------------------------------------------------------------- #
 
-# エントリーポイントとして WordPress セットアップスクリプトを実行
-ENTRYPOINT ["/usr/local/bin/setup-wordpress.sh"]
+# Tini を PID 1 として起動（プロセス管理・シグナル転送を担当）
+ENTRYPOINT	["/usr/bin/tini", "--"]
+
+# WordPress セットアップスクリプトを実行
+CMD			["/usr/local/bin/setup-wordpress.sh"]
 

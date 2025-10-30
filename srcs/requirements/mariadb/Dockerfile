@@ -9,66 +9,72 @@
 # ベースイメージ：Debian 11 (bullseye) - 安定版の一つ前のバージョン
 # ---------------------------------------------------------------------------- #
 
-FROM debian:bullseye
+FROM	debian:bullseye
 
 # ---------------------------------------------------------------------------- #
 # メタデータ
 # ---------------------------------------------------------------------------- #
 
-LABEL maintainer="hmori"
-LABEL description="MariaDB for Inception project"
+LABEL	maintainer="hmori"
+LABEL	description="MariaDB for Inception project"
 
 # ---------------------------------------------------------------------------- #
 # パッケージのインストール
 # ---------------------------------------------------------------------------- #
 
-RUN apt-get update && apt-get install -y \
-    # MariaDB サーバー
-    mariadb-server \
-    # MariaDB クライアント（デバッグ用）
-    mariadb-client \
-    # 不要なファイルを削除してイメージサイズを削減
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN		apt-get update && apt-get install -y \
+		# MariaDB サーバー
+		mariadb-server \
+		# MariaDB クライアント（デバッグ用）
+		mariadb-client \
+		# Tini：軽量 init システム（ゾンビプロセス対策・シグナル転送）
+		tini \
+		# 不要なファイルを削除してイメージサイズを削減
+		&& apt-get clean \
+		&& rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------------------------------------- #
 # MariaDB 設定ファイルのコピー
 # ---------------------------------------------------------------------------- #
 
 # カスタム設定ファイルをコピー
-COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
+COPY	conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 
 # ---------------------------------------------------------------------------- #
 # 初期化スクリプトのコピー
 # ---------------------------------------------------------------------------- #
 
 # データベースとユーザーを初期化するスクリプトをコピー
-COPY tools/init-db.sh /usr/local/bin/init-db.sh
+COPY	tools/init-db.sh /usr/local/bin/init-db.sh
 
 # スクリプトに実行権限を付与
-RUN chmod +x /usr/local/bin/init-db.sh
+RUN		chmod +x /usr/local/bin/init-db.sh
 
 # ---------------------------------------------------------------------------- #
 # データディレクトリの準備
 # ---------------------------------------------------------------------------- #
 
 # MariaDB のデータディレクトリの所有者を mysql ユーザーに変更
-RUN mkdir -p /var/lib/mysql /run/mysqld && \
-    chown -R mysql:mysql /var/lib/mysql /run/mysqld && \
-    chmod 755 /run/mysqld
+RUN		mkdir -p /var/lib/mysql /run/mysqld && \
+		chown -R mysql:mysql /var/lib/mysql /run/mysqld && \
+		chmod 755 /run/mysqld
 
 # ---------------------------------------------------------------------------- #
 # ポート公開
 # ---------------------------------------------------------------------------- #
 
 # MySQL/MariaDB のデフォルトポート 3306 を公開
-EXPOSE 3306
+EXPOSE	3306
 
 # ---------------------------------------------------------------------------- #
 # コンテナ起動コマンド
 # ---------------------------------------------------------------------------- #
 
-# エントリーポイントとして初期化スクリプトを実行
+
+# Tini を PID 1 として起動（プロセス管理・シグナル転送を担当）
+ENTRYPOINT	["/usr/bin/tini", "--"]
+
+# 初期化スクリプトを実行
 # このスクリプトがデータベースの初期化と MariaDB の起動を行う
-ENTRYPOINT ["/usr/local/bin/init-db.sh"]
+CMD			["/usr/local/bin/init-db.sh"]
 
