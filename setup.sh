@@ -40,18 +40,18 @@ echo -e "${NC}"
 echo -e "${YELLOW}[1/4] .env ファイルの作成${NC}"
 
 if [ -f "srcs/.env" ]; then
-    echo -e "${GREEN}✓${NC} .env ファイルは既に存在します"
-    read -p "上書きしますか？ (y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "スキップします"
-    else
-        cp srcs/env.sample srcs/.env
-        echo -e "${GREEN}✓${NC} .env ファイルを作成しました"
-    fi
+	echo -e "${GREEN}✓${NC} .env ファイルは既に存在します"
+	read -p "上書きしますか？ (y/N): " -n 1 -r
+	echo
+	if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+		echo "スキップします"
+	else
+		cp srcs/env.sample srcs/.env
+		echo -e "${GREEN}✓${NC} .env ファイルを作成しました"
+	fi
 else
-    cp srcs/env.sample srcs/.env
-    echo -e "${GREEN}✓${NC} .env ファイルを作成しました"
+	cp srcs/env.sample srcs/.env
+	echo -e "${GREEN}✓${NC} .env ファイルを作成しました"
 fi
 
 echo ""
@@ -87,10 +87,10 @@ echo ""
 echo -e "${YELLOW}[3/4] /etc/hosts の設定${NC}"
 
 if grep -q "${DOMAIN_NAME}" /etc/hosts; then
-    echo -e "${GREEN}✓${NC} /etc/hosts に ${DOMAIN_NAME} は既に登録されています"
+	echo -e "${GREEN}✓${NC} /etc/hosts に ${DOMAIN_NAME} は既に登録されています"
 else
-    echo "127.0.0.1    ${DOMAIN_NAME}" | sudo tee -a /etc/hosts > /dev/null
-    echo -e "${GREEN}✓${NC} /etc/hosts に ${DOMAIN_NAME} を追加しました"
+	echo "127.0.0.1    ${DOMAIN_NAME}" | sudo tee -a /etc/hosts > /dev/null
+	echo -e "${GREEN}✓${NC} /etc/hosts に ${DOMAIN_NAME} を追加しました"
 fi
 
 echo ""

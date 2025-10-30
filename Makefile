@@ -8,6 +8,10 @@ DATA_PATH		= /home/hana/data
 # Docker Compose コマンド
 DOCKER_COMPOSE	= docker-compose -f $(COMPOSE_FILE)
 
+ifeq ($(CT_NAME),)
+	CT_NAME = UNSELECT
+endif
+
 # デフォルトターゲット：すべてを構築して起動
 all: create_dirs build up
 
@@ -65,6 +69,16 @@ status:
 logs:
 	@$(DOCKER_COMPOSE) logs -f
 
+restart-count:
+	@echo "=== コンテナの再起動回数一覧 ==="
+	@echo "mariadb->   $$(docker inspect mariadb --format='RestartCount: {{.RestartCount}}')"
+	@echo "nginx->     $$(docker inspect nginx --format='RestartCount: {{.RestartCount}}')"
+	@echo "wordpress-> $$(docker inspect wordpress --format='RestartCount: {{.RestartCount}}')"
+
+# debug
+kill:
+	docker exec $(CT_NAME) bash -c "apt-get update && apt-get install -y procps && pkill -9 mysql"
+
 # .PHONY 宣言：これらのターゲットはファイル名ではないことを明示
-.PHONY: all create_dirs build up down restart clean fclean re status logs
+.PHONY: all create_dirs build up down restart clean fclean re status logs restart-count
 

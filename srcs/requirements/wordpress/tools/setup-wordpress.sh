@@ -21,15 +21,15 @@ NC='\033[0m' # No Color
 # ---------------------------------------------------------------------------- #
 
 log_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
+	echo -e "${GREEN}[INFO]${NC} $1"
 }
 
 log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
+	echo -e "${YELLOW}[WARN]${NC} $1"
 }
 
 log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+	echo -e "${RED}[ERROR]${NC} $1"
 }
 
 # ---------------------------------------------------------------------------- #
@@ -40,23 +40,23 @@ log_info "環境変数を確認中..."
 
 # 必須の環境変数が設定されているか確認
 if [ -z "$WORDPRESS_DB_HOST" ]; then
-    log_error "WORDPRESS_DB_HOST が設定されていません"
-    exit 1
+	log_error "WORDPRESS_DB_HOST が設定されていません"
+	exit 1
 fi
 
 if [ -z "$WORDPRESS_DB_NAME" ]; then
-    log_error "WORDPRESS_DB_NAME が設定されていません"
-    exit 1
+	log_error "WORDPRESS_DB_NAME が設定されていません"
+	exit 1
 fi
 
 if [ -z "$WORDPRESS_DB_USER" ]; then
-    log_error "WORDPRESS_DB_USER が設定されていません"
-    exit 1
+	log_error "WORDPRESS_DB_USER が設定されていません"
+	exit 1
 fi
 
 if [ -z "$WORDPRESS_DB_PASSWORD" ]; then
-    log_error "WORDPRESS_DB_PASSWORD が設定されていません"
-    exit 1
+	log_error "WORDPRESS_DB_PASSWORD が設定されていません"
+	exit 1
 fi
 
 log_info "すべての必須環境変数が設定されています"
@@ -73,16 +73,16 @@ DB_PORT=$(echo $WORDPRESS_DB_HOST | cut -d':' -f2)
 
 # データベースが起動するまで待機（最大 60 秒）
 for i in {1..60}; do
-    if mysql -h"$DB_HOST" -P"$DB_PORT" -u"$WORDPRESS_DB_USER" -p"$WORDPRESS_DB_PASSWORD" -e "SELECT 1" > /dev/null 2>&1; then
-        log_info "データベースに接続できました"
-        break
-    fi
-    if [ $i -eq 60 ]; then
-        log_error "データベース接続がタイムアウトしました"
-        exit 1
-    fi
-    log_warn "データベース接続待機中... (${i}/60)"
-    sleep 1
+	if mysql -h"$DB_HOST" -P"$DB_PORT" -u"$WORDPRESS_DB_USER" -p"$WORDPRESS_DB_PASSWORD" -e "SELECT 1" > /dev/null 2>&1; then
+		log_info "データベースに接続できました"
+		break
+	fi
+	if [ $i -eq 60 ]; then
+		log_error "データベース接続がタイムアウトしました"
+		exit 1
+	fi
+	log_warn "データベース接続待機中... (${i}/60)"
+	sleep 1
 done
 
 # ---------------------------------------------------------------------------- #
@@ -91,98 +91,98 @@ done
 
 # WordPress がまだダウンロードされていない場合
 if [ ! -f "/var/www/html/wp-config.php" ]; then
-    log_info "WordPress をダウンロード中..."
-    
-    # WP-CLI を使って WordPress のコアファイルをダウンロード
-    # --allow-root: root ユーザーでの実行を許可
-    # --path: インストール先のパス
-    wp core download --allow-root --path=/var/www/html --locale=ja
-    
-    log_info "WordPress のダウンロードが完了しました"
-    
-    # --------------------------------------------------------------------------
-    # wp-config.php の生成
-    # --------------------------------------------------------------------------
-    
-    log_info "wp-config.php を生成中..."
-    
-    # WP-CLI を使って wp-config.php を生成
-    wp config create \
-        --allow-root \
-        --path=/var/www/html \
-        --dbname="$WORDPRESS_DB_NAME" \
-        --dbuser="$WORDPRESS_DB_USER" \
-        --dbpass="$WORDPRESS_DB_PASSWORD" \
-        --dbhost="$WORDPRESS_DB_HOST" \
-        --dbcharset="utf8mb4" \
-        --dbcollate="utf8mb4_unicode_ci" \
-        --skip-check
-    
-    log_info "wp-config.php の生成が完了しました"
-    
-    # --------------------------------------------------------------------------
-    # WordPress のインストール
-    # --------------------------------------------------------------------------
-    
-    log_info "WordPress をインストール中..."
-    
-    # WP-CLI を使って WordPress をインストール
-    wp core install \
-        --allow-root \
-        --path=/var/www/html \
-        --url="${WORDPRESS_SITE_URL:-https://hmori.42.fr}" \
-        --title="${WORDPRESS_SITE_TITLE:-My Inception Website}" \
-        --admin_user="${WORDPRESS_ADMIN_USER:-wpboss}" \
-        --admin_password="${WORDPRESS_ADMIN_PASSWORD:-admin_password}" \
-        --admin_email="${WORDPRESS_ADMIN_EMAIL:-admin@hmori.42.fr}" \
-        --skip-email
-    
-    log_info "WordPress のインストールが完了しました"
-    
-    # --------------------------------------------------------------------------
-    # 追加ユーザーの作成
-    # --------------------------------------------------------------------------
-    
-    log_info "一般ユーザーを作成中..."
-    
-    # WP-CLI を使って一般ユーザーを作成
-    # role=author: 投稿者権限
-    wp user create \
-        "${WORDPRESS_USER:-normal_user}" \
-        "${WORDPRESS_USER_EMAIL:-user@hmori.42.fr}" \
-        --role=author \
-        --user_pass="${WORDPRESS_USER_PASSWORD:-user_password}" \
-        --allow-root \
-        --path=/var/www/html
-    
-    log_info "一般ユーザーの作成が完了しました"
-    
-    # --------------------------------------------------------------------------
-    # パーマリンク設定
-    # --------------------------------------------------------------------------
-    
-    log_info "パーマリンク設定を変更中..."
-    
-    # パーマリンク構造を「投稿名」に設定
-    wp rewrite structure '/%postname%/' --allow-root --path=/var/www/html
-    
-    log_info "パーマリンク設定が完了しました"
-    
-    # --------------------------------------------------------------------------
-    # デフォルトコンテンツの削除（オプション）
-    # --------------------------------------------------------------------------
-    
-    log_info "デフォルトコンテンツを削除中..."
-    
-    # デフォルトの投稿を削除
-    wp post delete 1 --force --allow-root --path=/var/www/html 2>/dev/null || true
-    
-    # デフォルトのページを削除
-    wp post delete 2 --force --allow-root --path=/var/www/html 2>/dev/null || true
-    
-    log_info "セットアップが完了しました"
+	log_info "WordPress をダウンロード中..."
+	
+	# WP-CLI を使って WordPress のコアファイルをダウンロード
+	# --allow-root: root ユーザーでの実行を許可
+	# --path: インストール先のパス
+	wp core download --allow-root --path=/var/www/html --locale=ja
+	
+	log_info "WordPress のダウンロードが完了しました"
+	
+	# --------------------------------------------------------------------------
+	# wp-config.php の生成
+	# --------------------------------------------------------------------------
+	
+	log_info "wp-config.php を生成中..."
+	
+	# WP-CLI を使って wp-config.php を生成
+	wp config create \
+		--allow-root \
+		--path=/var/www/html \
+		--dbname="$WORDPRESS_DB_NAME" \
+		--dbuser="$WORDPRESS_DB_USER" \
+		--dbpass="$WORDPRESS_DB_PASSWORD" \
+		--dbhost="$WORDPRESS_DB_HOST" \
+		--dbcharset="utf8mb4" \
+		--dbcollate="utf8mb4_unicode_ci" \
+		--skip-check
+	
+	log_info "wp-config.php の生成が完了しました"
+	
+	# --------------------------------------------------------------------------
+	# WordPress のインストール
+	# --------------------------------------------------------------------------
+	
+	log_info "WordPress をインストール中..."
+	
+	# WP-CLI を使って WordPress をインストール
+	wp core install \
+		--allow-root \
+		--path=/var/www/html \
+		--url="${WORDPRESS_SITE_URL:-https://hmori.42.fr}" \
+		--title="${WORDPRESS_SITE_TITLE:-My Inception Website}" \
+		--admin_user="${WORDPRESS_ADMIN_USER:-wpboss}" \
+		--admin_password="${WORDPRESS_ADMIN_PASSWORD:-admin_password}" \
+		--admin_email="${WORDPRESS_ADMIN_EMAIL:-admin@hmori.42.fr}" \
+		--skip-email
+	
+	log_info "WordPress のインストールが完了しました"
+	
+	# --------------------------------------------------------------------------
+	# 追加ユーザーの作成
+	# --------------------------------------------------------------------------
+	
+	log_info "一般ユーザーを作成中..."
+	
+	# WP-CLI を使って一般ユーザーを作成
+	# role=author: 投稿者権限
+	wp user create \
+		"${WORDPRESS_USER:-normal_user}" \
+		"${WORDPRESS_USER_EMAIL:-user@hmori.42.fr}" \
+		--role=author \
+		--user_pass="${WORDPRESS_USER_PASSWORD:-user_password}" \
+		--allow-root \
+		--path=/var/www/html
+	
+	log_info "一般ユーザーの作成が完了しました"
+	
+	# --------------------------------------------------------------------------
+	# パーマリンク設定
+	# --------------------------------------------------------------------------
+	
+	log_info "パーマリンク設定を変更中..."
+	
+	# パーマリンク構造を「投稿名」に設定
+	wp rewrite structure '/%postname%/' --allow-root --path=/var/www/html
+	
+	log_info "パーマリンク設定が完了しました"
+	
+	# --------------------------------------------------------------------------
+	# デフォルトコンテンツの削除（オプション）
+	# --------------------------------------------------------------------------
+	
+	log_info "デフォルトコンテンツを削除中..."
+	
+	# デフォルトの投稿を削除
+	wp post delete 1 --force --allow-root --path=/var/www/html 2>/dev/null || true
+	
+	# デフォルトのページを削除
+	wp post delete 2 --force --allow-root --path=/var/www/html 2>/dev/null || true
+	
+	log_info "セットアップが完了しました"
 else
-    log_info "WordPress は既にインストールされています"
+	log_info "WordPress は既にインストールされています"
 fi
 
 # ---------------------------------------------------------------------------- #
