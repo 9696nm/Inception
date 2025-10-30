@@ -59,6 +59,46 @@ if [ -z "$WORDPRESS_DB_PASSWORD" ]; then
 	exit 1
 fi
 
+if [ -z "$WORDPRESS_SITE_URL" ]; then
+	log_error "WORDPRESS_SITE_URL が設定されていません"
+	exit 1
+fi
+
+if [ -z "$WORDPRESS_SITE_TITLE" ]; then
+	log_error "WORDPRESS_SITE_TITLE が設定されていません"
+	exit 1
+fi
+
+if [ -z "$WORDPRESS_ADMIN_USER" ]; then
+	log_error "WORDPRESS_ADMIN_USER が設定されていません"
+	exit 1
+fi
+
+if [ -z "$WORDPRESS_ADMIN_PASSWORD" ]; then
+	log_error "WORDPRESS_ADMIN_PASSWORD が設定されていません"
+	exit 1
+fi
+
+if [ -z "$WORDPRESS_ADMIN_EMAIL" ]; then
+	log_error "WORDPRESS_ADMIN_EMAIL が設定されていません"
+	exit 1
+fi
+
+if [ -z "$WORDPRESS_USER" ]; then
+	log_error "WORDPRESS_USER が設定されていません"
+	exit 1
+fi
+
+if [ -z "$WORDPRESS_USER_EMAIL" ]; then
+	log_error "WORDPRESS_USER_EMAIL が設定されていません"
+	exit 1
+fi
+
+if [ -z "$WORDPRESS_USER_PASSWORD" ]; then
+	log_error "WORDPRESS_USER_PASSWORD が設定されていません"
+	exit 1
+fi
+
 # ---------------------------------------------------------------------------- #
 # 管理者ユーザー名のバリデーション
 # ---------------------------------------------------------------------------- #
@@ -68,8 +108,8 @@ log_info "管理者ユーザー名を検証中..."
 # 禁止されたキーワードのリスト（大文字小文字を区別しない）
 FORBIDDEN_KEYWORDS=("admin" "administrator")
 
-# 管理者ユーザー名が設定されているか確認
-ADMIN_USER="${WORDPRESS_ADMIN_USER:-wpboss}"
+# 管理者ユーザー名を取得
+ADMIN_USER="$WORDPRESS_ADMIN_USER"
 
 # ユーザー名を小文字に変換してチェック
 ADMIN_USER_LOWER=$(echo "$ADMIN_USER" | tr '[:upper:]' '[:lower:]')
@@ -159,11 +199,11 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 	wp core install \
 		--allow-root \
 		--path=/var/www/html \
-		--url="${WORDPRESS_SITE_URL:-https://hmori.42.fr}" \
-		--title="${WORDPRESS_SITE_TITLE:-My Inception Website}" \
-		--admin_user="${WORDPRESS_ADMIN_USER:-wpboss}" \
-		--admin_password="${WORDPRESS_ADMIN_PASSWORD:-admin_password}" \
-		--admin_email="${WORDPRESS_ADMIN_EMAIL:-admin@hmori.42.fr}" \
+		--url="$WORDPRESS_SITE_URL" \
+		--title="$WORDPRESS_SITE_TITLE" \
+		--admin_user="$WORDPRESS_ADMIN_USER" \
+		--admin_password="$WORDPRESS_ADMIN_PASSWORD" \
+		--admin_email="$WORDPRESS_ADMIN_EMAIL" \
 		--skip-email
 	
 	log_info "WordPress のインストールが完了しました"
@@ -177,10 +217,10 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 	# WP-CLI を使って一般ユーザーを作成
 	# role=author: 投稿者権限
 	wp user create \
-		"${WORDPRESS_USER:-normal_user}" \
-		"${WORDPRESS_USER_EMAIL:-user@hmori.42.fr}" \
+		"$WORDPRESS_USER" \
+		"$WORDPRESS_USER_EMAIL" \
 		--role=author \
-		--user_pass="${WORDPRESS_USER_PASSWORD:-user_password}" \
+		--user_pass="$WORDPRESS_USER_PASSWORD" \
 		--allow-root \
 		--path=/var/www/html
 	
