@@ -139,4 +139,3 @@ docker exec mariadb mysqldump -uroot -p[PASSWORD] wordpress_db > db-backup.sql
 ---
 
 **質問やエラーが発生した場合は、`make logs` でログを確認してください！**
-
