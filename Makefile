@@ -80,21 +80,25 @@ count-restart:
 
 # 強制クラッシュ
 kill-db:
-	@echo $(RED)"pkill mariadb in myspl"$(RESET)
+	@echo $(RED)"-- pkill mariadb in myspl! --"$(RESET)
 	@docker exec mariadb bash -c "apt-get update && apt-get install -y procps && pkill -9 mysql"
 
 kill-ng:
-	@echo $(RED)"pkill nginx in nginx"$(RESET)
+	@echo $(RED)"-- pkill nginx in nginx! --"$(RESET)
 	@docker exec nginx bash -c "apt-get update && apt-get install -y procps && pkill -9 nginx"
+
+kill-wp:
+	@echo $(RED)"-- pkill nginx in wordpress! --"$(RESET)
+	@docker exec wordpress bash -c "apt-get update && apt-get install -y procps && pkill -9 php-fpm7.4"
 
 # キャッシュ削除
 rm-cashes:
-	@echo $(RED)"unused cashes remove"$(RESET)
+	@echo $(RED)"-- unused cashes remove! --"$(RESET)
 	@docker image prune -f
 
 # 接続テスト
 test-connect:
-	@echo $(GREEN)"connect test"$(RESET)
+	@echo $(GREEN)"-- connect test --"$(RESET)
 	@curl -kI "https://hmori.42.fr"
 
 # .PHONY 宣言：これらのターゲットはファイル名ではないことを明示
