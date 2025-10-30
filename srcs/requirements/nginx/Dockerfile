@@ -34,24 +34,21 @@ RUN		apt-get update && apt-get install -y \
 		&& rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------------------------------------- #
-# SSL/TLS 証明書の生成
+# SSL/TLS 証明書用ディレクトリの作成
 # ---------------------------------------------------------------------------- #
 
-# SSL ディレクトリを作成
+# SSL ディレクトリを作成（証明書は起動時スクリプトで生成）
 RUN		mkdir -p /etc/nginx/ssl
 
-# 自己署名証明書を生成
-# -x509: X.509 証明書を生成
-# -nodes: パスフレーズなし（no DES encryption）
-# -days 365: 有効期限 365 日
-# -newkey rsa:2048: 2048 ビットの RSA 鍵を生成
-# -keyout: 秘密鍵の出力先
-# -out: 証明書の出力先
-# -subj: 証明書のサブジェクト情報
-RUN		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-		-keyout /etc/nginx/ssl/nginx.key \
-		-out /etc/nginx/ssl/nginx.crt \
-		-subj "/C=JP/ST=Tokyo/L=Tokyo/O=42Tokyo/OU=Student/CN=hmori.42.fr"
+# ---------------------------------------------------------------------------- #
+# セットアップスクリプトのコピー
+# ---------------------------------------------------------------------------- #
+
+# SSL 証明書生成と NGINX 起動を行うスクリプトをコピー
+COPY	tools/setup-nginx.sh /usr/local/bin/setup-nginx.sh
+
+# スクリプトに実行権限を付与
+RUN		chmod +x /usr/local/bin/setup-nginx.sh
 
 # ---------------------------------------------------------------------------- #
 # 設定ファイルのコピー
@@ -74,7 +71,7 @@ EXPOSE	443
 # Tini を PID 1 として起動（プロセス管理・シグナル転送を担当）
 ENTRYPOINT	["/usr/bin/tini", "--"]
 
-# NGINX をフォアグラウンドで起動
-# daemon off: バックグラウンドではなくフォアグラウンドで実行（Docker 要件）
-CMD			["nginx", "-g", "daemon off;"]
+# セットアップスクリプトを実行
+# このスクリプトが SSL 証明書の生成と NGINX の起動を行う
+CMD			["/usr/local/bin/setup-nginx.sh"]
 
