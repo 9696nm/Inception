@@ -27,6 +27,8 @@ RUN		apt-get update && apt-get install -y \
 		nginx \
 		# OpenSSL：自己署名証明書の生成に使用
 		openssl \
+		# gettext：envsubst コマンド（環境変数置換）に使用
+		gettext-base \
 		# Tini：軽量 init システム（ゾンビプロセス対策・シグナル転送）
 		tini \
 		# 不要なファイルを削除してイメージサイズを削減
