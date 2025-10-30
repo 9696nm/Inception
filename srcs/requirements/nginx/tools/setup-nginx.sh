@@ -62,12 +62,27 @@ if [ -f "/etc/nginx/ssl/nginx.crt" ] && [ -f "/etc/nginx/ssl/nginx.key" ]; then
 else
 	log_info "SSL/TLS 証明書を生成中..."
 	
-	# デフォルト値の設定
-	SSL_COUNTRY="${SSL_COUNTRY:-JP}"
-	SSL_STATE="${SSL_STATE:-Tokyo}"
-	SSL_CITY="${SSL_CITY:-Tokyo}"
-	SSL_ORGANIZATION="${SSL_ORGANIZATION:-42Tokyo}"
-	SSL_ORG_UNIT="${SSL_ORG_UNIT:-Student}"
+	# 環境変数の必須チェック
+	if [ -z "$SSL_COUNTRY" ]; then
+		log_error "SSL_COUNTRY が設定されていません"
+		exit 1
+	fi
+	if [ -z "$SSL_STATE" ]; then
+		log_error "SSL_STATE が設定されていません"
+		exit 1
+	fi
+	if [ -z "$SSL_CITY" ]; then
+		log_error "SSL_CITY が設定されていません"
+		exit 1
+	fi
+	if [ -z "$SSL_ORGANIZATION" ]; then
+		log_error "SSL_ORGANIZATION が設定されていません"
+		exit 1
+	fi
+	if [ -z "$SSL_ORG_UNIT" ]; then
+		log_error "SSL_ORG_UNIT が設定されていません"
+		exit 1
+	fi
 	
 	# 証明書情報を表示
 	log_info "証明書情報:"
