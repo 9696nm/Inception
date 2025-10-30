@@ -59,6 +59,35 @@ if [ -z "$WORDPRESS_DB_PASSWORD" ]; then
 	exit 1
 fi
 
+# ---------------------------------------------------------------------------- #
+# 管理者ユーザー名のバリデーション
+# ---------------------------------------------------------------------------- #
+
+log_info "管理者ユーザー名を検証中..."
+
+# 禁止されたキーワードのリスト（大文字小文字を区別しない）
+FORBIDDEN_KEYWORDS=("admin" "administrator")
+
+# 管理者ユーザー名が設定されているか確認
+ADMIN_USER="${WORDPRESS_ADMIN_USER:-wpboss}"
+
+# ユーザー名を小文字に変換してチェック
+ADMIN_USER_LOWER=$(echo "$ADMIN_USER" | tr '[:upper:]' '[:lower:]')
+
+# 禁止されたキーワードが含まれているかチェック
+for keyword in "${FORBIDDEN_KEYWORDS[@]}"; do
+	if echo "$ADMIN_USER_LOWER" | grep -q "$keyword"; then
+		log_error "管理者ユーザー名 '${ADMIN_USER}' は使用できません"
+		log_error "セキュリティ上の理由により、以下のキーワードを含むユーザー名は禁止されています："
+		log_error "  - admin (etc: admin, Admin, admin-123)"
+		log_error "  - administrator (etc: administrator, Administrator, Administrator-123)"
+		log_error ".env ファイルで WORDPRESS_ADMIN_USER を別の名前に変更してください"
+		exit 1
+	fi
+done
+
+log_info "管理者ユーザー名 '${ADMIN_USER}' は有効です"
+
 log_info "すべての必須環境変数が設定されています"
 
 # ---------------------------------------------------------------------------- #
