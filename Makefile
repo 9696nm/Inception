@@ -92,6 +92,11 @@ rm-cashes:
 	@echo $(RED)"unused cashes remove"$(RESET)
 	@docker image prune -f
 
+# 接続テスト
+test-connect:
+	@echo $(GREEN)"connect test"$(RESET)
+	@curl -kI "https://hmori.42.fr"
+
 # .PHONY 宣言：これらのターゲットはファイル名ではないことを明示
 .PHONY: all create_dirs build up down restart clean fclean re status logs restart-count
 
