@@ -15,8 +15,8 @@ FROM	debian:bullseye
 # メタデータ
 # ---------------------------------------------------------------------------- #
 
-LABEL	maintainer="hmori"
-LABEL	description="WordPress with PHP-FPM for Inception project"
+LABEL	maintainer="hmori" \
+		description="WordPress with PHP-FPM for Inception project"
 
 # ---------------------------------------------------------------------------- #
 # パッケージのインストール

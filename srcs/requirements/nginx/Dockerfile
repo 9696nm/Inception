@@ -15,8 +15,8 @@ FROM	debian:bullseye
 # メタデータ
 # ---------------------------------------------------------------------------- #
 
-LABEL	maintainer="hmori"
-LABEL	description="NGINX with TLS for Inception project"
+LABEL	maintainer="hmori" \
+		description="NGINX with TLS for Inception project"
 
 # ---------------------------------------------------------------------------- #
 # パッケージのインストール

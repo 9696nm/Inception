@@ -15,8 +15,8 @@ FROM	debian:bullseye
 # メタデータ
 # ---------------------------------------------------------------------------- #
 
-LABEL	maintainer="hmori"
-LABEL	description="MariaDB for Inception project"
+LABEL	maintainer="hmori" \
+		description="MariaDB for Inception project"
 
 # ---------------------------------------------------------------------------- #
 # パッケージのインストール
