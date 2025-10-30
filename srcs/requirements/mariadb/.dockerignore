@@ -1,0 +1,13 @@
+
+# Ignore everything
+**
+
+# Allow these files at top-level
+!Dockerfile
+!.dockerignore
+
+# Allow specific directories and their contents
+!conf/
+!conf/*.cnf
+!tools/
+!tools/*.sh
