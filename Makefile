@@ -102,5 +102,6 @@ test-connect:
 	@curl -kI "https://hmori.42.fr"
 
 # .PHONY 宣言：これらのターゲットはファイル名ではないことを明示
-.PHONY: all create_dirs build up down restart clean fclean re status logs restart-count
+.PHONY: all create_dirs build up down restart clean fclean re status logs \
+		count-restart kill-db kill-ng kill-wp rm-cashes test-connect
 
