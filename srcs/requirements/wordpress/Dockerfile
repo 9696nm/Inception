@@ -24,25 +24,25 @@ LABEL	maintainer="hmori" \
 
 RUN		apt-get update && apt-get install -y \
 		# PHP-FPM：FastCGI Process Manager
-		php7.4-fpm \
+		php8.2-fpm \
 		# PHP MySQL 拡張（MariaDB との通信に必要）
-		php7.4-mysql \
+		php8.2-mysql \
 		# PHP MySQLi 拡張（WordPress が使用）
-		php7.4-mysqli \
+		php8.2-mysqli \
 		# PHP cURL 拡張（HTTP リクエスト用）
-		php7.4-curl \
+		php8.2-curl \
 		# PHP GD 拡張（画像処理用）
-		php7.4-gd \
+		php8.2-gd \
 		# PHP mbstring 拡張（マルチバイト文字列処理用）
-		php7.4-mbstring \
+		php8.2-mbstring \
 		# PHP XML 拡張（XML パース用）
-		php7.4-xml \
+		php8.2-xml \
 		# PHP ZIP 拡張（プラグイン/テーマのインストール用）
-		php7.4-zip \
+		php8.2-zip \
 		# PHP Imagick 拡張（高度な画像処理用）
-		php7.4-imagick \
+		php8.2-imagick \
 		# PHP Intl 拡張（国際化機能用）
-		php7.4-intl \
+		php8.2-intl \
 		# curl：ファイルダウンロード用
 		curl \
 		# MariaDB クライアント（データベース接続確認用）
@@ -71,10 +71,10 @@ RUN		curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 # ---------------------------------------------------------------------------- #
 
 # PHP-FPM の設定ファイルをコピー
-COPY	conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
+COPY	conf/www.conf /etc/php/8.2/fpm/pool.d/www.conf
 
 # PHP の設定ファイルをコピー（オプション）
-# COPY conf/php.ini /etc/php/7.4/fpm/php.ini
+# COPY conf/php.ini /etc/php/8.2/fpm/php.ini
 
 # ---------------------------------------------------------------------------- #
 # WordPress のセットアップスクリプトをコピー

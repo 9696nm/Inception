@@ -280,4 +280,4 @@ log_info "PHP-FPM を起動しています..."
 # PHP-FPM をフォアグラウンドで実行
 # -F: フォアグラウンドモード
 # -R: root ユーザーでの実行を許可（Docker コンテナ内では必要）
-exec php-fpm7.4 -F -R
+exec php-fpm8.2 -F -R

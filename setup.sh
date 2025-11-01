@@ -75,8 +75,8 @@ echo -e "${GREEN}✓${NC} ドメイン名: ${DOMAIN_NAME}"
 sed -i "s/DOMAIN_NAME=.*/DOMAIN_NAME=${DOMAIN_NAME}/" srcs/.env
 
 # docker-compose.yml と Makefile のパスを更新
-sed -i "s|/home/hana/data|/home/${CURRENT_USER}/data|g" srcs/docker-compose.yml
-sed -i "s|/home/hana|/home/${CURRENT_USER}|g" Makefile
+sed -i "s|/home/hmori/data|/home/${CURRENT_USER}/data|g" srcs/docker-compose.yml
+sed -i "s|/home/hmori|/home/${CURRENT_USER}|g" Makefile
 
 echo ""
 

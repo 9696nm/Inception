@@ -30,7 +30,7 @@ echo "127.0.0.1    hmori.42.fr" | sudo tee -a /etc/hosts
 
 ```bash
 # Makefile が自動で作成しますが、手動でも可能
-sudo mkdir -p /home/hana/data/{wordpress,mariadb}
+sudo mkdir -p /home/hmori/data/{wordpress,mariadb}
 ```
 
 ### 4️⃣ ビルドと起動
@@ -130,7 +130,7 @@ WordPress 管理画面からプラグインをインストール・有効化で�
 
 ```bash
 # WordPress ファイル
-sudo tar czf wordpress-backup.tar.gz /home/hana/data/wordpress
+sudo tar czf wordpress-backup.tar.gz /home/hmori/data/wordpress
 
 # データベース
 docker exec mariadb mysqldump -uroot -p[PASSWORD] wordpress_db > db-backup.sql

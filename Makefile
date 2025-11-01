@@ -3,7 +3,7 @@
 COMPOSE_FILE	= srcs/docker-compose.yml
 
 # データボリュームのパス（ログイン名を実際の名前に置き換えてください）
-DATA_PATH		= /home/hana/data
+DATA_PATH		= /home/hmori/data
 
 # Docker Compose コマンド
 DOCKER_COMPOSE	= docker-compose -f $(COMPOSE_FILE)
@@ -89,7 +89,7 @@ kill-ng:
 
 kill-wp:
 	@echo $(RED)"-- pkill nginx in wordpress! --"$(RESET)
-	@docker exec wordpress bash -c "apt-get update && apt-get install -y procps && pkill -9 php-fpm7.4"
+	@docker exec wordpress bash -c "apt-get update && apt-get install -y procps && pkill -9 php-fpm8.2"
 
 # キャッシュ削除
 rm-cashes:

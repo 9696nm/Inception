@@ -82,8 +82,8 @@ make create_dirs
 または手動で：
 
 ```bash
-mkdir -p /home/hana/data/wordpress
-mkdir -p /home/hana/data/mariadb
+mkdir -p /home/hmori/data/wordpress
+mkdir -p /home/hmori/data/mariadb
 ```
 
 ### 4. プロジェクトのビルドと起動
@@ -135,7 +135,7 @@ $ chromium https://hmori.42.fr/wp-admin
 
 - **ベースイメージ**: Debian 11 (Bullseye)
 - **NGINX**: 最新の Debian パッケージ版
-- **PHP**: 7.4-FPM
+- **PHP**: 8.2-FPM
 - **MariaDB**: 最新の Debian パッケージ版
 - **WordPress**: WP-CLI で自動インストール
 
@@ -201,7 +201,7 @@ make
 
 ## 👤 作成者
 
-hana - 42 Tokyo
+hmori - 42 Tokyo
 
 ## 📄 ライセンス
 

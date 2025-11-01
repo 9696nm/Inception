@@ -27,7 +27,7 @@
 │  │  ┌──────────────────────────────────────────────┐      │    │
 │  │  │  WordPress コンテナ (ポート 9000)            │      │    │
 │  │  │  ┌──────────────────────────┐                │      │    │
-│  │  │  │  - PHP-FPM 7.4           │                │      │    │
+│  │  │  │  - PHP-FPM 8.2           │                │      │    │
 │  │  │  │  - WP-CLI                │                │      │    │
 │  │  │  │  - WordPress 本体        │                │      │    │
 │  │  │  └──────────────────────────┘                │      │    │
@@ -49,8 +49,8 @@
 │  ┌────────────────────────────────────────────────────────┐    │
 │  │              ホストのデータディレクトリ                    │    │
 │  │                                                         │    │
-│  │  /home/hana/data/wordpress  ←→ WordPress データ        │    │
-│  │  /home/hana/data/mariadb    ←→ MariaDB データ          │    │
+│  │  /home/hmori/data/wordpress  ←→ WordPress データ        │    │
+│  │  /home/hmori/data/mariadb    ←→ MariaDB データ          │    │
 │  └────────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -131,7 +131,7 @@ WORDPRESS_DB_HOST=mariadb:3306
       type: none
       o: bind
       # ホストマシンのパス（要件：/home/login/data）
-      device: /home/hana/data/wordpress
+      device: /home/hmori/data/wordpress
 ```
 
 **マウント構成:**
@@ -148,7 +148,7 @@ WORDPRESS_DB_HOST=mariadb:3306
 
 **データの流れ:**
 ```
-ホスト: /home/hana/data/wordpress
+ホスト: /home/hmori/data/wordpress
               ↕ (バインドマウント)
 Docker ボリューム: wordpress-data
               ↕
@@ -168,7 +168,7 @@ NGINX コンテナ: /var/www/html (読み取りのみ)
       type: none
       o: bind
       # ホストマシンのパス（要件：/home/login/data）
-      device: /home/hana/data/mariadb
+      device: /home/hmori/data/mariadb
 ```
 
 ```118:118:srcs/docker-compose.yml
@@ -177,7 +177,7 @@ NGINX コンテナ: /var/www/html (読み取りのみ)
 
 **データの流れ:**
 ```
-ホスト: /home/hana/data/mariadb
+ホスト: /home/hmori/data/mariadb
               ↕ (バインドマウント)
 Docker ボリューム: mariadb-data
               ↕

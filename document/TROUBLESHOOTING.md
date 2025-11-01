@@ -23,8 +23,8 @@
 make down
 
 # 2. データをクリア
-sudo rm -rf /home/hana/data/mariadb/*
-sudo rm -rf /home/hana/data/wordpress/*
+sudo rm -rf /home/hmori/data/mariadb/*
+sudo rm -rf /home/hmori/data/wordpress/*
 
 # 3. 再起動
 make up
@@ -56,7 +56,7 @@ docker exec mariadb mysql -uroot -p[PASSWORD] -e "SELECT User, Host FROM mysql.u
 
 #### 症状
 ```
-ERROR: [/etc/php/7.4/fpm/pool.d/www.conf:1] unknown entry '#'
+ERROR: [/etc/php/8.2/fpm/pool.d/www.conf:1] unknown entry '#'
 ERROR: FPM initialization failed
 ```
 
@@ -161,10 +161,10 @@ docker network inspect srcs_inception-network
 docker inspect mariadb | grep -A 20 "Mounts"
 
 # データディレクトリの権限を確認
-ls -la /home/hana/data/mariadb/
+ls -la /home/hmori/data/mariadb/
 
 # 権限を修正（必要に応じて）
-sudo chown -R 999:999 /home/hana/data/mariadb/
+sudo chown -R 999:999 /home/hmori/data/mariadb/
 ```
 
 ---
@@ -289,8 +289,8 @@ docker network inspect srcs_inception-network
 docker volume ls
 
 # データディレクトリの内容
-ls -la /home/hana/data/mariadb/
-ls -la /home/hana/data/wordpress/
+ls -la /home/hmori/data/mariadb/
+ls -la /home/hmori/data/wordpress/
 ```
 
 ---
@@ -307,9 +307,9 @@ make fclean
 docker system prune -af
 
 # 3. データディレクトリを削除
-sudo rm -rf /home/hana/data/mariadb/
-sudo rm -rf /home/hana/data/wordpress/
-mkdir -p /home/hana/data/{mariadb,wordpress}
+sudo rm -rf /home/hmori/data/mariadb/
+sudo rm -rf /home/hmori/data/wordpress/
+mkdir -p /home/hmori/data/{mariadb,wordpress}
 
 # 4. 完全に再構築
 make re

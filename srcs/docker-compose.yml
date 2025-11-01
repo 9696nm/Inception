@@ -148,7 +148,7 @@ volumes:
       type: none
       o: bind
       # ホストマシンのパス
-      device: /home/hana/data/wordpress
+      device: /home/hmori/data/wordpress
   
   # MariaDB データベース用ボリューム
   mariadb-data:
@@ -157,5 +157,5 @@ volumes:
       type: none
       o: bind
       # ホストマシンのパス
-      device: /home/hana/data/mariadb
+      device: /home/hmori/data/mariadb
 
