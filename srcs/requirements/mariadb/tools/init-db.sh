@@ -118,13 +118,13 @@ if [ ! -d "/var/lib/mysql/${MYSQL_DATABASE}" ]; then
 		-- ルートパスワードを設定
 		ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 		
-		-- リモートルートアクセスを削除（セキュリティ）
+		-- リモートルートアクセスを削除
 		DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 		
-		-- 匿名ユーザーを削除（セキュリティ）
+		-- 匿名ユーザーを削除
 		DELETE FROM mysql.user WHERE User='';
 		
-		-- test データベースを削除（セキュリティ）
+		-- test データベースを削除
 		DROP DATABASE IF EXISTS test;
 		DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
 		
