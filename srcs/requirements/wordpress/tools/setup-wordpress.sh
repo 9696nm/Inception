@@ -163,7 +163,7 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 	log_info "WordPress をダウンロード中..."
 	
 	# WP-CLI を使って WordPress のコアファイルをダウンロード
-	wp core download --allow-root --path=/var/www/html
+	wp core download --allow-root --path=/var/www/html --locale=ja
 	
 	log_info "WordPress のダウンロードが完了しました"
 	
