@@ -1,12 +1,11 @@
 # ============================================================================ #
 #                         WordPress Dockerfile                                 #
 # ============================================================================ #
-# Debian ベースの WordPress + PHP-FPM コンテナを構築
 # NGINX からのリクエストを処理
 # ============================================================================ #
 
 # ---------------------------------------------------------------------------- #
-# ベースイメージ：Debian 11 (bullseye) - 安定版の一つ前のバージョン
+# ベースイメージ：Debian 12 (bookworm)
 # ---------------------------------------------------------------------------- #
 
 FROM	debian:bookworm
@@ -25,29 +24,29 @@ LABEL	maintainer="hmori" \
 RUN		apt-get update && apt-get install -y \
 		# PHP-FPM：FastCGI Process Manager
 		php8.2-fpm \
-		# PHP MySQL 拡張（MariaDB との通信に必要）
+		# PHP MySQL 拡張
 		php8.2-mysql \
-		# PHP MySQLi 拡張（WordPress が使用）
+		# PHP MySQLi 拡張
 		php8.2-mysqli \
-		# PHP cURL 拡張（HTTP リクエスト用）
+		# PHP cURL 拡張
 		php8.2-curl \
-		# PHP GD 拡張（画像処理用）
+		# PHP GD 拡張
 		php8.2-gd \
-		# PHP mbstring 拡張（マルチバイト文字列処理用）
+		# PHP mbstring 拡張
 		php8.2-mbstring \
-		# PHP XML 拡張（XML パース用）
+		# PHP XML 拡張
 		php8.2-xml \
-		# PHP ZIP 拡張（プラグイン/テーマのインストール用）
+		# PHP ZIP 拡張
 		php8.2-zip \
-		# PHP Imagick 拡張（高度な画像処理用）
+		# PHP Imagick 拡張
 		php8.2-imagick \
-		# PHP Intl 拡張（国際化機能用）
+		# PHP Intl 拡張
 		php8.2-intl \
 		# curl：ファイルダウンロード用
 		curl \
-		# MariaDB クライアント（データベース接続確認用）
+		# MariaDB クライアント
 		mariadb-client \
-		# Tini：軽量 init システム（ゾンビプロセス対策・シグナル転送）
+		# ゾンビプロセス対策
 		tini \
 		# 不要なファイルを削除してイメージサイズを削減
 		&& apt-get clean \
@@ -56,7 +55,6 @@ RUN		apt-get update && apt-get install -y \
 # ---------------------------------------------------------------------------- #
 # WP-CLI のインストール
 # ---------------------------------------------------------------------------- #
-# WP-CLI：WordPress のコマンドラインツール
 # WordPress のインストールと設定を自動化するために使用
 
 # WP-CLI をダウンロード
@@ -72,9 +70,6 @@ RUN		curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 
 # PHP-FPM の設定ファイルをコピー
 COPY	conf/www.conf /etc/php/8.2/fpm/pool.d/www.conf
-
-# PHP の設定ファイルをコピー（オプション）
-# COPY conf/php.ini /etc/php/8.2/fpm/php.ini
 
 # ---------------------------------------------------------------------------- #
 # WordPress のセットアップスクリプトをコピー
@@ -113,7 +108,7 @@ EXPOSE	9000
 # コンテナ起動コマンド
 # ---------------------------------------------------------------------------- #
 
-# Tini を PID 1 として起動（プロセス管理・シグナル転送を担当）
+# Tini を PID 1 として起動
 ENTRYPOINT	["/usr/bin/tini", "--"]
 
 # WordPress セットアップスクリプトを実行
