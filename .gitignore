@@ -27,3 +27,4 @@ env.sample
 *.md
 subject/
 documents/
+setup.sh
