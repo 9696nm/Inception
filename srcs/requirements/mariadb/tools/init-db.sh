@@ -114,7 +114,7 @@ if [ ! -d "/var/lib/mysql/${MYSQL_DATABASE}" ]; then
 	log_info "データベースとユーザーを作成中..."
 	
 	# SQL コマンドを実行
-	mysql <<-EOSQL
+	mysql <<-EOF
 		-- ルートパスワードを設定
 		ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
 		
@@ -139,7 +139,7 @@ if [ ! -d "/var/lib/mysql/${MYSQL_DATABASE}" ]; then
 		
 		-- 権限テーブルを再読み込み
 		FLUSH PRIVILEGES;
-EOSQL
+EOF
 	
 	log_info "データベースとユーザーの作成が完了しました"
 	
