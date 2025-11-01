@@ -163,9 +163,7 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 	log_info "WordPress をダウンロード中..."
 	
 	# WP-CLI を使って WordPress のコアファイルをダウンロード
-	# --allow-root: root ユーザーでの実行を許可
-	# --path: インストール先のパス
-	wp core download --allow-root --path=/var/www/html --locale=ja
+	wp core download --allow-root --path=/var/www/html
 	
 	log_info "WordPress のダウンロードが完了しました"
 	
@@ -183,8 +181,8 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 		--dbuser="$WORDPRESS_DB_USER" \
 		--dbpass="$WORDPRESS_DB_PASSWORD" \
 		--dbhost="$WORDPRESS_DB_HOST" \
-		--dbcharset="utf8mb4" \
-		--dbcollate="utf8mb4_unicode_ci" \
+		--dbcharset="utf8" \
+		--dbcollate="utf8_unicode_ci" \
 		--skip-check
 	
 	log_info "wp-config.php の生成が完了しました"
@@ -213,8 +211,7 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 	# --------------------------------------------------------------------------
 	
 	log_info "一般ユーザーを作成中..."
-	
-	# WP-CLI を使って一般ユーザーを作成
+
 	# role=author: 投稿者権限
 	wp user create \
 		"$WORDPRESS_USER" \
@@ -230,46 +227,17 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 	# パーマリンク設定
 	# --------------------------------------------------------------------------
 	
-	log_info "パーマリンク設定を変更中..."
+	# log_info "パーマリンク設定を変更中..."
 	
-	# パーマリンク構造を「投稿名」に設定
-	wp rewrite structure '/%postname%/' --allow-root --path=/var/www/html
+	# # パーマリンク構造を「投稿名」に設定
+	# wp rewrite structure '/%postname%/' --allow-root --path=/var/www/html
 	
-	log_info "パーマリンク設定が完了しました"
-	
-	# --------------------------------------------------------------------------
-	# デフォルトコンテンツの削除（オプション）
-	# --------------------------------------------------------------------------
-	
-	log_info "デフォルトコンテンツを削除中..."
-	
-	# デフォルトの投稿を削除
-	wp post delete 1 --force --allow-root --path=/var/www/html 2>/dev/null || true
-	
-	# デフォルトのページを削除
-	wp post delete 2 --force --allow-root --path=/var/www/html 2>/dev/null || true
-	
+	# log_info "パーマリンク設定が完了しました"
+
 	log_info "セットアップが完了しました"
 else
 	log_info "WordPress は既にインストールされています"
 fi
-
-# ---------------------------------------------------------------------------- #
-# ファイルの所有権とパーミッションの設定
-# ---------------------------------------------------------------------------- #
-
-log_info "ファイルの所有権とパーミッションを設定中..."
-
-# WordPress ディレクトリの所有者を www-data に変更
-chown -R www-data:www-data /var/www/html
-
-# ディレクトリのパーミッションを設定
-find /var/www/html -type d -exec chmod 755 {} \;
-
-# ファイルのパーミッションを設定
-find /var/www/html -type f -exec chmod 644 {} \;
-
-log_info "パーミッションの設定が完了しました"
 
 # ---------------------------------------------------------------------------- #
 # PHP-FPM の起動（フォアグラウンド）
@@ -277,7 +245,5 @@ log_info "パーミッションの設定が完了しました"
 
 log_info "PHP-FPM を起動しています..."
 
-# PHP-FPM をフォアグラウンドで実行
 # -F: フォアグラウンドモード
-# -R: root ユーザーでの実行を許可（Docker コンテナ内では必要）
-exec php-fpm8.2 -F -R
+exec php-fpm8.2 -F
